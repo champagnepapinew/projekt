@@ -3,10 +3,19 @@
 Full-stack web application that suggests weekly charter prices for sailboats in Croatia based on historical charter statistics from the Yacht-Rent website.
 
 The project covers the full workflow:
+
 - Data scraping
 - Database creation
 - Backend API
 - Frontend user interface
+
+---
+
+## Authors
+
+- Jan Antos
+- Michał Hacaś
+- Adam Radecki
 
 ---
 
@@ -24,9 +33,9 @@ The project covers the full workflow:
 ## Project Structure
 
 GroupProject/
-- scraper.py
+
+- scrapper.py
 - main.py
-- charter_data.db
 - final_database.db
 - requirements.txt
 - frontend/
@@ -70,15 +79,15 @@ http://127.0.0.1:8000/docs
 
 ## Database Schema (sailboat_prices)
 
-- id (INTEGER, primary key)
-- date (TEXT)
-- cabins (TEXT)
-- berths (INTEGER)
-- length (INTEGER)
-- price_euro (INTEGER)
-- boat_type (TEXT)
-- country (TEXT)
-- region (TEXT)
+- id, INTEGER, Primary key
+- date, TEXT, Charter start date
+- cabins, TEXT, Cabin count category (0-1,2,3,4,5-6,7-9)
+- berths, INTEGER, Number of berths (automatically mapped based on cabin count)
+- length, INTEGER, Average yacht length in meters (automatically mapped based on cabin count)
+- price_euro, INTEGER, Weekly charter price for the yacht
+- boat_type, TEXT, Type of the boat (e.g. Catamarans, Sailing yachts or All Boats)
+- country, TEXT, Country name (Croatia)
+- region, TEXT, Specific location (e.g. Split, Dalmatia or All Regions)
 
 ---
 
@@ -87,9 +96,10 @@ http://127.0.0.1:8000/docs
 GET /api/form-options  
 Returns available values for form fields.
 
-GET /api/suggest-price  
+GET /api/suggest-price
 
 Parameters:
+
 - date (required)
 - boat_type (optional)
 - region (optional)
@@ -99,12 +109,22 @@ Parameters:
 
 Example:
 
-/api/suggest-price?date=2025-07-15&region=Split
+/api/suggest-price?date=2026-07-04&region=Split
 
 Response:
 
 {
-  "suggested_price_euro": 11742
+"suggested_price_euro": 11742,
+"input_data": {
+"date": "2026-07-04",
+"region": "Split",
+"type": null,
+"details": {
+"cabins": null,
+"berths": null,
+"length": null
+}
+}
 }
 
 ---
@@ -116,7 +136,3 @@ The system extracts the month from the selected date, filters database records u
 If no matching records are found, the system returns no result.
 
 ---
-
-## Authors
-
-Group project – Web Programming course

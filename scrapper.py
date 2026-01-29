@@ -3,33 +3,35 @@ from bs4 import BeautifulSoup
 import sqlite3
 import re
 
-
+#Function to clean price strings and convert them to integers
 def clean_value(text):
     if not text:
         return 0
+    #removing currency symbols, spaces, and commas
     text = text.replace('€', '').replace(' ', '').replace(',', '')
     try:
         return int(float(text))
     except:
         return 0
 
-
+#Mapping cabin to estimated berths and boat length
 def get_mappings(cabin):
     mapping = {
         "0-1": {"berths": 2, "length": 8},
-        "2": {"berths": 4, "length": 10},
-        "3": {"berths": 6, "length": 12},
-        "4": {"berths": 8, "length": 14},
+        "2":   {"berths": 4, "length": 10},
+        "3":   {"berths": 6, "length": 12},
+        "4":   {"berths": 8, "length": 14},
         "5-6": {"berths": 12, "length": 16},
         "7-9": {"berths": 16, "length": 20}
     }
 
     return mapping.get(cabin, None)
 
-
+#Initializing the database and create the table
 def setup_database():
     conn = sqlite3.connect('final_database.db')
     cursor = conn.cursor()
+    #refreshing the table every time the script runs
     cursor.execute('DROP TABLE IF EXISTS sailboat_prices')
     cursor.execute('''
         CREATE TABLE sailboat_prices (
@@ -44,11 +46,12 @@ def setup_database():
             region TEXT
         )
     ''')
-
+    
     conn.commit()
     return conn
 
 
+#Main scraping logic
 def scrape_data(url, boat_type, region, cursor):
     headers = {'User-Agent': 'Mozilla/5.0'}
     try:
@@ -56,35 +59,38 @@ def scrape_data(url, boat_type, region, cursor):
         if res.status_code != 200: return
         soup = BeautifulSoup(res.text, 'html.parser')
 
-        price_graphs = [g for g in soup.find_all('g', class_='data', id=re.compile(r'^graphPRICE'))
+        #finding SVG groups that contains price graph data
+        price_graphs = [g for g in soup.find_all('g', class_='data', id=re.compile(r'^graphPRICE')) 
                         if "PER" not in g.get('id', '')]
 
         for graph in price_graphs:
+            #extracting cabin category from graph ID
             cabin_val = graph.get('id').replace('graphPRICE', '')
             maps = get_mappings(cabin_val)
             if maps is None:
                 continue
+            #finding all price labels in the graph
             price_points = graph.find_all('text', class_='label-text')
 
             for p in price_points:
                 try:
+                    #cleaning the price and extracting the date from tspan
                     price = clean_value(p.get_text(strip=True).split('€')[0])
                     date = p.find('tspan', class_='label').get_text(strip=True)
+                    #inserting the collected data into the database
                     cursor.execute('''
                         INSERT INTO sailboat_prices (date, cabins, berths, length, price_euro, boat_type, country, region)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     ''', (date, cabin_val, maps['berths'], maps['length'], price, boat_type, "Croatia", region))
-                except:
-                    continue
-    except:
-        pass
+                except: continue
+    except: pass
 
-
+#Main function to start the whole scraping process
 def run_scraper():
     conn = setup_database()
     cursor = conn.cursor()
     base_url = "https://www.yacht-rent.com/yacht-charter-statistics-charts?country_id=1"
-
+    
     YEARS = [2020, 2021, 2022, 2023, 2024, 2025]
 
     BOAT_TYPES = [
@@ -125,23 +131,24 @@ def run_scraper():
 
     for year in YEARS:
         print(f"Starting to download data from the year: {year}")
-
+        
+        #scraping data by boat type
         for b in BOAT_TYPES:
             print(f"Processing type: {b['name']}")
             url = f"{base_url}&group_id={b['id']}&year={year}"
             scrape_data(url, b['name'], "All Regions", cursor)
-
+        
+        #scraping data by region
         for r in REGIONS:
             print(f"Region processing: {r['name']}")
             region_url_name = r['name'].replace(' ', '+')
             url = f"{base_url}&group={region_url_name}&group_id={r['id']}&year={year}"
             scrape_data(url, "All Boats", r['name'], cursor)
-
+        
         conn.commit()
 
     conn.close()
     print("The database is ready.")
-
 
 if __name__ == "__main__":
     run_scraper()
