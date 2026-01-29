@@ -3,9 +3,15 @@ from datetime import datetime
 from fastapi import FastAPI, Query
 from typing import Optional
 import uvicorn
-
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 app = FastAPI(title="Yacht Valuation")
 
+app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+
+@app.get("/app")
+def open_frontend():
+    return FileResponse("frontend/index.html")
 
 # --- DATABASE LOGIC ---
 
@@ -105,7 +111,7 @@ def get_smart_average_price(
         prices = [r[0] for r in results]
         return int(sum(prices) / len(prices))
     else:
-        return 3000, "global_estimate"
+        return None
 
 
 # --- API ---

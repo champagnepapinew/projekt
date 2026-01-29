@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sailboat Price Suggestion</title>
+    <link rel="stylesheet" href="/frontend/style.css">
+</head>
+<body>
+
+<h1>Sailboat Charter Price Suggestion</h1>
+
+<div class="form-container">
+
+    <label>Date</label>
+    <input type="date" id="date">
+
+    <label>Boat Type</label>
+    <select id="boat_type"></select>
+
+    <label>Region</label>
+    <select id="region"></select>
+
+    <label>Cabins</label>
+    <select id="cabins"></select>
+
+    <label>Berths</label>
+    <select id="berths"></select>
+
+    <label>Length (meters)</label>
+    <select id="length"></select>
+
+    <button onclick="getPrice()">Suggest Price</button>
+
+</div>
+
+<div id="result"></div>
+
+<script src="/frontend/script.js"></script>
+</body>
+</html>
