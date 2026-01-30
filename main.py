@@ -23,7 +23,7 @@ def get_smart_average_price(
         berths: Optional[int] = None,
         length: Optional[int] = None
 ):
-    conn = sqlite3.connect('charter_data.db')
+    conn = sqlite3.connect('final_database.db')
     cursor = conn.cursor()
 
     # 1. Month extraction
@@ -86,14 +86,16 @@ def get_smart_average_price(
     # If we searched for specific cabins/lengths and didn't find anything
     # we loosen up our criteria and look for a general price for that boat type (and region, if specified).
 
+        # 6. PLAN B (fallback: loosen criteria)
     print("No accurate results. Activating Plan B...")
+
     fallback_query = """
-                     SELECT price_euro
-                     FROM sailboat_prices
-                     WHERE date LIKE ?
-                       AND price_euro > 0
-                     """
-    fallback_params = [boat_type, f"%{month_str}%"]
+        SELECT price_euro
+        FROM sailboat_prices
+        WHERE date LIKE ?
+          AND price_euro > 0
+    """
+    fallback_params = [f"%{month_str}%"]
 
     if boat_type and boat_type != "All Boats":
         fallback_query += " AND boat_type = ?"
@@ -102,6 +104,8 @@ def get_smart_average_price(
     if region and region != "All Regions":
         fallback_query += " AND region = ?"
         fallback_params.append(region)
+
+    print(f"DEBUG FALLBACK SQL: {fallback_query} | Params: {fallback_params}")
 
     cursor.execute(fallback_query, fallback_params)
     results = cursor.fetchall()
@@ -127,7 +131,7 @@ def get_form_options():
     Returns all available options to dropdown lists.
     The frontend can retrieve this once and build the entire form.
     """
-    conn = sqlite3.connect('charter_data.db')
+    conn = sqlite3.connect('final_database.db')
     cursor = conn.cursor()
 
     options = {}
