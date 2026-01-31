@@ -1,124 +1,139 @@
-:root{
+:root
+{
+  --bg: #f6f8fb;
+  --card: #ffffff;
   --text: #0f172a;
   --muted: #64748b;
-  --card: rgba(255, 255, 255, 0.92);
   --border: rgba(15, 23, 42, 0.12);
-  --shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
-  --radius: 14px;
+  --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
   --primary: #2563eb;
   --primaryHover: #1d4ed8;
+  --radius: 14px;
 }
 
-*{ box-sizing: border-box; }
+* { box-sizing: border-box; }
 
-html, body {
+html, body 
+{
   height: 100%;
+}
+/* body and background */
+body 
+{
   margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: Arial, sans-serif;
-
-  background-image: url("/frontend/image/yachts.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  position: relative;
-  color: white;
-}
-/* CIEMNA WARSTWA NA TLE */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.35);
-  z-index: 0;
-  pointer-events: none;
-}
-
-body > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* ====== UI ====== */
-
-h1{
-  text-align: center;
-  margin: 40px 16px 18px;
-  font-size: 34px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-}
-
-/* kontener formularza */
-.form-container{
-  width: min(520px, calc(100% - 32px));
-  margin: 0 auto;
-  padding: 18px;
-
-  background: var(--card);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
   color: var(--text);
-  border: 1px solid var(--border);
+
+  
+  background:
+    radial-gradient(
+      1200px 500px at 50% -50%,
+      rgba(37, 99, 235, 0.14),
+      transparent 60%
+    ),
+    url("/frontend/image/yachts.png"),
+    var(--bg);
+
+  background-size: auto, cover, auto;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+
+  padding: 44px 18px;
+}
+
+
+
+h1 
+{
+  text-align: center;
+  margin: 0 0 18px 0;
+  font-size: 34px;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  text-shadow: 0 4px 18px rgba(0,0,0,0.35);
+}
+
+/* form */
+
+.form-container 
+{
+  width: min(520px, 100%);
+  margin: 0 auto;
+  background: rgba(255,255,255,0.92);
+  padding: 22px 22px 18px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  border: 1px solid var(--border);
   backdrop-filter: blur(6px);
 }
 
-/* etykiety */
-.form-container label{
+label 
+{
   display: block;
   margin: 12px 0 6px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
 }
 
-/* inputy */
-.form-container input,
-.form-container select{
+input, select 
+{
   width: 100%;
-  padding: 10px 12px;
+  padding: 11px 12px;
   border-radius: 10px;
-  border: 1px solid rgba(15, 23, 42, 0.18);
-  background: white;
+  border: 1px solid var(--border);
+  background: #fff;
   outline: none;
+  font-size: 14px;
+  transition: border-color .15s ease, box-shadow .15s ease;
 }
 
-.form-container input:focus,
-.form-container select:focus{
-  border-color: rgba(37, 99, 235, 0.6);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+input:focus, select:focus 
+{
+  border-color: rgba(37, 99, 235, 0.55);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
-/* przycisk */
-.form-container button{
+/* button */
+
+button 
+{
   width: 100%;
-  margin-top: 14px;
+  margin-top: 16px;
   padding: 12px 14px;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--primary);
-  color: white;
-  font-weight: 700;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
+  transition: transform .06s ease, background .15s ease, box-shadow .15s ease;
+  box-shadow: 0 10px 18px rgba(37, 99, 235, 0.22);
 }
 
-.form-container button:hover{
+button:hover 
+{
   background: var(--primaryHover);
 }
 
-/* wynik */
-#result{
-  width: min(520px, calc(100% - 32px));
-  margin: 14px auto 40px;
-  padding: 12px 14px;
+button:active 
+{
+  transform: translateY(1px);
+}
 
-  background: rgba(255,255,255,0.20);
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 10px;
-  color: white;
+/* result */
+
+#result 
+{
+  width: min(520px, 100%);
+  margin: 18px auto 0;
+  padding: 14px 16px;
   text-align: center;
-  backdrop-filter: blur(6px);
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: var(--radius);
+
+  background: rgba(255,255,255,0.65);
+  border: 1px solid rgba(15,23,42,0.12);
+  color: #0f172a;
 }

@@ -14,7 +14,7 @@ def clean_value(text):
     except:
         return 0
 
-#Mapping cabin to estimated berths and boat length
+#Mapping cabin to berths and boat length
 def get_mappings(cabin):
     mapping = {
         "0-1": {"berths": 2, "length": 8},
@@ -27,7 +27,7 @@ def get_mappings(cabin):
 
     return mapping.get(cabin, None)
 
-#Initializing the database and create the table
+#Initializing the database and creating the table
 def setup_database():
     conn = sqlite3.connect('final_database.db')
     cursor = conn.cursor()
@@ -59,12 +59,12 @@ def scrape_data(url, boat_type, region, cursor):
         if res.status_code != 200: return
         soup = BeautifulSoup(res.text, 'html.parser')
 
-        #finding SVG groups that contains price graph data
+        #finding svg groups that contains price graph data
         price_graphs = [g for g in soup.find_all('g', class_='data', id=re.compile(r'^graphPRICE')) 
                         if "PER" not in g.get('id', '')]
 
         for graph in price_graphs:
-            #extracting cabin category from graph ID
+            #extracting cabin category from graph id
             cabin_val = graph.get('id').replace('graphPRICE', '')
             maps = get_mappings(cabin_val)
             if maps is None:

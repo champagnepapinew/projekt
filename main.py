@@ -1,4 +1,5 @@
 import sqlite3
+import os
 from datetime import datetime
 from fastapi import FastAPI, Query
 from typing import Optional
@@ -19,11 +20,12 @@ def get_smart_average_price(
         query_date: str,
         boat_type: Optional[str] = None,
         region: Optional[str] = None,
-        cabins: Optional[int] = None,
+        cabins: Optional[str] = None,
         berths: Optional[int] = None,
         length: Optional[int] = None
 ):
-    conn = sqlite3.connect('final_database.db')
+    conn = sqlite3.connect(os.getenv("DB_PATH", "final_database.db"))
+
     cursor = conn.cursor()
 
     # 1. Month extraction
@@ -59,7 +61,7 @@ def get_smart_average_price(
     #cabins filter
     if cabins is not None:
         query += " AND cabins = ?"
-        params.append(str(cabins))
+        params.append(cabins)
 
     #berths filter
     if berths is not None:
@@ -86,7 +88,7 @@ def get_smart_average_price(
     # If we searched for specific cabins/lengths and didn't find anything
     # we loosen up our criteria and look for a general price for that boat type (and region, if specified).
 
-        # 6. PLAN B (fallback: loosen criteria)
+        # 6. PLAN B
     print("No accurate results. Activating Plan B...")
 
     fallback_query = """
@@ -167,7 +169,7 @@ def suggest_price(
         date: str,
         boat_type: Optional[str] = Query(None),
         region: Optional[str] = Query(None),
-        cabins: Optional[int] = Query(None),
+        cabins: Optional[str] = Query(None),
         berths: Optional[int] = Query(None),
         length: Optional[int] = Query(None)
 ):
@@ -183,7 +185,7 @@ def suggest_price(
         "input_data": {
             "date": date,
             "region": region if region else "All Regions",
-            "type": boat_type if region else "All Boats",
+            "type": boat_type if boat_type else "All Boats",
             "details": {"cabins": cabins, "berths": berths, "length": length}
         }
     }

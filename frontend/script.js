@@ -1,9 +1,11 @@
+// Base URL for API calls.
 const API_BASE = "";
 
-async function loadOptions() {
+async function loadOptions() 
+{
     const res = await fetch(`${API_BASE}/api/form-options`);
     const data = await res.json();
-
+ // all dropdowns dynamically
     fillSelect("boat_type", data.boat_types);
     fillSelect("region", data.regions);
     fillSelect("cabins", data.cabins);
@@ -11,7 +13,8 @@ async function loadOptions() {
     fillSelect("length", data.lengths);
 }
 
-function fillSelect(id, values) {
+function fillSelect(id, values) 
+{
     const select = document.getElementById(id);
     select.innerHTML = `<option value="">Any</option>`;
 
@@ -22,15 +25,16 @@ function fillSelect(id, values) {
         select.appendChild(opt);
     });
 }
-
-async function getPrice() {
+//suggetsion price
+async function getPrice()
+{
   const date = document.getElementById("date").value;
   const boat_type = document.getElementById("boat_type").value;
   const region = document.getElementById("region").value;
   const cabins = document.getElementById("cabins").value;
   const berths = document.getElementById("berths").value;
   const length = document.getElementById("length").value;
-
+// mandatory date 
   if (!date) {
     alert("Please select a date");
     return;
@@ -38,8 +42,7 @@ async function getPrice() {
 
   const params = new URLSearchParams();
   params.set("date", date);
-
-  // Only add filters if the user selected something
+ // Only add filters if the user selected something
   if (boat_type) params.set("boat_type", boat_type);
   if (region) params.set("region", region);
   if (cabins) params.set("cabins", cabins);
@@ -51,7 +54,7 @@ async function getPrice() {
   const res = await fetch(url);
   const data = await res.json();
 
-  console.log("API response:", data); // debug
+  console.log("API response:", data); 
 
   if (data.suggested_price_euro === null || data.suggested_price_euro === undefined) {
   document.getElementById("result").innerText =

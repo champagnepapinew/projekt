@@ -59,6 +59,10 @@ Run backend server:
 
 python main.py
 
+Run testing:
+
+python -m pytest -q
+
 ---
 
 ## Running the application
@@ -134,5 +138,17 @@ Response:
 The system extracts the month from the selected date, filters database records using selected parameters and calculates the average weekly price from matching results.
 
 If no matching records are found, the system returns no result.
+
+---
+
+## Pricing Methodology
+
+We decided that using the average for the years 2020–2025 would be sufficient for this project, because with such large differences in prices between months, simple averaging gives the most meaningful results. Instead of unnecessarily complicating matters with linear regression, which could work illogically with our boat categories and regions, we chose a simpler method that is accurate enough to provide a reliable price to the user.
+
+---
+
+## Testing
+Backend tests are implemented using pytest and FastAPI TestClient.
+Tests use a temporary SQLite database.
 
 ---
